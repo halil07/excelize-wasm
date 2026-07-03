@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>@halil07/excelize demo</title>
+</head>
+<body>
+  <h1>@halil07/excelize</h1>
+  <p>Open the console; then click the button.</p>
+  <button id="demo" disabled>Create xlsx in memory</button>
+  <p id="out"></p>
+
+  <!-- wasm_exec.js MUST be loaded before the loader; it defines global Go -->
+  <script src="../dist/wasm_exec.js"></script>
+  <script src="../dist/excelize.js"></script>
+  <script>
+    // The UMD loader attaches the API factory result to `self.Excelize`.
+    const Excelize = self.Excelize;
+
+    // Instantiate the wasm module up front. Once the Go runtime registers the
+    // `ExcelizeWasm` bindings on globalThis, the button becomes usable.
+    WebAssembly.instantiateStreaming(
+      fetch("../dist/excelize.wasm"),
+      new Go().importObject
+    )
+      .then(async (res) => {
+        const go = new Go();
+        go.run(res.instance).catch(() => {});
+        while (typeof ExcelizeWasm === "undefined") {
+          await new Promise((r) => setTimeout(r, 5));
+        }
+        document.getElementById("demo").disabled = false;
+      })
+      .catch((err) => {
+        document.getElementById("out").textContent = "Failed to load wasm: " + err;
+      });
+
+    document.getElementById("demo").addEventListener("click", async () => {
+      await Excelize.ready();
+      const f = Excelize.newFile();
+      f.setCellValue("Sheet1", "A1", "Hello from WebAssembly!");
+      f.setCellValue("Sheet1", "B2", 1);
+      f.setCellValue("Sheet1", "B3", 2);
+      f.setCellValue("Sheet1", "B4", 3);
+      f.setCellValue("Sheet1", "B5", 4);
+      f.setCellValue("Sheet1", "B6", 5);
+      f.setCellFormula("Sheet1", "B1", "=SUM(B2:B6)");
+      const bold = f.newStyle({ Font: { Bold: true } });
+      f.setCellStyle("Sheet1", "A1", "A1", bold);
+
+      const bytes = f.save();
+      f.close();
+
+      const blob = new Blob([bytes], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "demo.xlsx";
+      a.click();
+      URL.revokeObjectURL(url);
+      document.getElementById("out").textContent =
+        "demo.xlsx written (" + bytes.byteLength + " bytes)";
+    });
+  </script>
+</body>
+</html>

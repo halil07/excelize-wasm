@@ -1,0 +1,41 @@
+{
+  "name": "@halil07/excelize",
+  "version": "0.1.0",
+  "description": "Read & write Microsoft Excel (XLSX/XLSM/XLTM/XLTX) files in the browser and Node.js via WebAssembly, powered by the Go excelize library.",
+  "license": "BSD-3-Clause",
+  "author": "halil07",
+  "homepage": "https://github.com/halil07/excelize",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/halil07/excelize.git"
+  },
+  "bugs": {
+    "url": "https://github.com/halil07/excelize/issues"
+  },
+  "keywords": [
+    "excel",
+    "xlsx",
+    "spreadsheet",
+    "wasm",
+    "webassembly",
+    "excelize",
+    "workbook"
+  ],
+  "type": "commonjs",
+  "main": "dist/excelize.js",
+  "files": [
+    "dist/excelize.js",
+    "dist/excelize.wasm",
+    "dist/wasm_exec.js",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build:go": "node scripts/build.js",
+    "build": "npm run build:go",
+    "prepublishOnly": "npm run build"
+  },
+  "engines": {
+    "node": ">=14"
+  }
+}
