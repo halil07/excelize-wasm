@@ -52,11 +52,11 @@
   ],
   "scripts": {
     "build:go": "node scripts/build.js",
-    "build": "npm run build:go",
-    "postbuild":"npm run types",
+    "build": "pnpm run build:go",
+    "postbuild":"pnpm run types",
     "test": "node --test test/excelize.test.mjs",
     "types": "tsc --noEmit test/types.test.ts && tsc --noEmit test/types-cjs.test.cts",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "pnpm run build"
   },
   "devDependencies": {
     "typescript": "^6.0.0"

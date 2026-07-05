@@ -234,11 +234,11 @@ Karmaşık seçenek yapıları (`Style`, `Table`, `DataValidation`, `Chart`, …
 
 ## Yayınlama
 
-Yayınlanan npm paketi yalnızca önceden derlenmiş `dist/` yapıtlarını, README ve LICENSE dosyalarını içerir (`package.json` içindeki `files` alanına bakın). `npm publish`, `prepublishOnly` betiği aracılığıyla derlemeyi otomatik olarak çalıştırır.
+Yayınlanan npm paketi yalnızca önceden derlenmiş `dist/` yapıtlarını, README ve LICENSE dosyalarını içerir (`package.json` içindeki `files` alanına bakın). `pnpm publish`, `prepublishOnly` betiği aracılığıyla derlemeyi otomatik olarak çalıştırır.
 
 ### GitHub Actions ile Otomatik Yayınlama
 
-Repo’ya `v*.*.*` formatında bir git etiketi push edildiğinde, GitHub Actions otomatik olarak derler, test eder ve npm’e yayınlar.
+Repo’ya `v*.*.*` formatında bir git etiketi push edildiğinde, GitHub Actions otomatik olarak derler, test eder ve npm’e yayınlar. Workflow’lar bağımlılık yönetimi için **pnpm** kullanır.
 
 Gerekli kurulum:
 
@@ -249,7 +249,7 @@ Gerekli kurulum:
 
    ```bash
    # package.json içindeki version alanını güncelleyin
-   npm version patch   # veya minor / major
+   pnpm version patch   # veya minor / major
    git push origin main --tags
    ```
 
@@ -260,7 +260,7 @@ Gerekli kurulum:
    git push origin v0.2.0
    ```
 
-Etiket push edildiğinde `.github/workflows/release.yml` çalışır; başarılı testlerin ardından `npm publish --access public` ile paket yayınlanır.
+Etiket push edildiğinde `.github/workflows/release.yml` çalışır; başarılı testlerin ardından `pnpm publish --access public --no-git-checks` ile paket yayınlanır.
 
 ---
 
