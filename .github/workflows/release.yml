@@ -1,4 +1,4 @@
-name: Release to npm
+name: Stage release on npm
 
 on:
   push:
@@ -6,8 +6,8 @@ on:
       - "v*.*.*"
 
 jobs:
-  publish:
-    name: Build, Test & Publish
+  stage:
+    name: Build, Test & Stage
     runs-on: ubuntu-latest
 
     steps:
@@ -27,7 +27,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: "pnpm"
           registry-url: "https://registry.npmjs.org"
 
@@ -40,7 +40,10 @@ jobs:
       - name: Run tests
         run: pnpm test
 
-      - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
+      - name: Install npm CLI with staged publishing support
+        run: npm install -g npm@"^11.15.0"
+
+      - name: Stage package on npm
+        run: npm stage publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

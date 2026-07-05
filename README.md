@@ -236,9 +236,9 @@ Karmaşık seçenek yapıları (`Style`, `Table`, `DataValidation`, `Chart`, …
 
 Yayınlanan npm paketi yalnızca önceden derlenmiş `dist/` yapıtlarını, README ve LICENSE dosyalarını içerir (`package.json` içindeki `files` alanına bakın). `pnpm publish`, `prepublishOnly` betiği aracılığıyla derlemeyi otomatik olarak çalıştırır.
 
-### GitHub Actions ile Otomatik Yayınlama
+### GitHub Actions ile Otomatik Staging
 
-Repo’ya `v*.*.*` formatında bir git etiketi push edildiğinde, GitHub Actions otomatik olarak derler, test eder ve npm’e yayınlar. Workflow’lar bağımlılık yönetimi için **pnpm** kullanır.
+Hesabında staged publishing aktif olduğu için workflow doğrudan yayın yapmak yerine paketi **npm staging alanına** gönderir. Sen etiket push ettikten sonra GitHub Actions derler, test eder ve `npm stage publish` ile paketi stage’ler. Paketin canlıya geçmesi için senin (veya başka bir maintainer’ın) npm CLI veya npmjs.com üzerinden 2FA ile onaylaman gerekir.
 
 Gerekli kurulum:
 
@@ -260,7 +260,15 @@ Gerekli kurulum:
    git push origin v0.2.0
    ```
 
-Etiket push edildiğinde `.github/workflows/release.yml` çalışır; başarılı testlerin ardından `pnpm publish --access public --no-git-checks` ile paket yayınlanır.
+Etiket push edildiğinde `.github/workflows/release.yml` çalışır; başarılı testlerin ardından `npm stage publish` ile paket staging alanına gönderilir. Staged paketi onaylamak için:
+
+```bash
+npm stage list
+npm stage view <stage-id>
+npm stage approve <stage-id>
+```
+
+veya npmjs.com üzerindeki **Staged Packages** sekmesinden **Approve** butonuna tıklayın. Onay sırasında 2FA doğrulaması istenecektir.
 
 ---
 
