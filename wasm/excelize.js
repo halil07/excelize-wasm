@@ -210,6 +210,11 @@
 
   const Excelize = {
     ready,
+    // Primary npm entry-point: await excelizeInit() returns the initialized API.
+    excelizeInit: async function () {
+      await ready();
+      return Excelize;
+    },
     get raw() { return getRaw(); },
     newFile(opts) { getRaw(); return new File(unwrap(getRaw().newFile(opts || null))); },
     openFile(bytes, opts) {

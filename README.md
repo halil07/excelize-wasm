@@ -30,12 +30,33 @@ yarn add @halil07/excelize
 
 ## Usage — Node.js
 
+### ES Modules
+
+```js
+import { excelizeInit } from "@halil07/excelize";
+import fs from "fs";
+
+const Excelize = await excelizeInit();   // auto-loads the bundled wasm runtime
+
+const f = Excelize.newFile();
+f.setCellValue("Sheet1", "A1", "Hello from Node!");
+f.setCellValue("Sheet1", "A2", 41);
+f.setCellFormula("Sheet1", "A3", "=A2+1");
+console.log(f.getRows("Sheet1"));
+
+const bytes = f.save();                  // Uint8Array
+f.close();
+fs.writeFileSync("out.xlsx", bytes);
+```
+
+### CommonJS
+
 ```js
 const fs = require("fs");
-const Excelize = require("@halil07/excelize");
+const { excelizeInit } = require("@halil07/excelize");
 
 (async () => {
-  await Excelize.ready();          // auto-loads the bundled wasm runtime
+  const Excelize = await excelizeInit(); // auto-loads the bundled wasm runtime
 
   const f = Excelize.newFile();
   f.setCellValue("Sheet1", "A1", "Hello from Node!");
@@ -43,10 +64,25 @@ const Excelize = require("@halil07/excelize");
   f.setCellFormula("Sheet1", "A3", "=A2+1");
   console.log(f.getRows("Sheet1"));
 
-  const bytes = f.save();          // Uint8Array
+  const bytes = f.save();                // Uint8Array
   f.close();
   fs.writeFileSync("out.xlsx", bytes);
-})();
+)();
+```
+
+### TypeScript
+
+Type definitions ship with the package (`dist/excelize.d.ts`). Import
+`excelizeInit` and await it to get a fully typed `Excelize` API:
+
+```ts
+import { excelizeInit, File } from "@halil07/excelize";
+
+const Excelize = await excelizeInit();
+const f: File = Excelize.newFile();
+f.setCellValue("Sheet1", "A1", "Hello from TypeScript!");
+const bytes: Uint8Array = f.save();
+f.close();
 ```
 
 ## Usage — Browser
@@ -71,10 +107,12 @@ runnable example lives in [`wasm/example.html`](wasm/example.html).
 
 ## API surface
 
-The default export is an `Excelize` object plus a `File` class returned by
-`newFile()` / `openFile()`. Every method returns the computed value
-(`Uint8Array`, `string`, `number`, `Array`, …) on success and throws a JS
-`Error` on failure (the underlying `{ ok:false, err }` is unwrapped).
+Import `excelizeInit` and await it to get the initialized `Excelize` API. The
+returned object contains `newFile()` / `openFile()` plus the `File` class.
+Every method returns the computed value (`Uint8Array`, `string`, `number`,
+`Array`, …) on success and throws a JS `Error` on failure (the underlying
+`{ ok:false, err }` is unwrapped). The low-level `{ ok, data }` / `{ ok:false, err }`
+bindings are also exposed on `Excelize.raw` after initialization.
 
 | Area | Methods |
 |------|---------|
@@ -104,7 +142,7 @@ Requires Go ≥ 1.25 and Node.js.
 ```bash
 npm install
 npm run build      # cross-platform: scripts/build.js
-# outputs dist/excelize.wasm, dist/wasm_exec.js, dist/excelize.js
+# outputs dist/excelize.wasm, dist/wasm_exec.js, dist/excelize.js, dist/excelize.cjs, dist/excelize.mjs
 ```
 
 PowerShell alternative: `./wasm/build.ps1`.

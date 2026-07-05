@@ -4,15 +4,15 @@
 //   node wasm/example-node.js
 //
 // In Node the loader auto-loads the bundled Go runtime + wasm, so all you
-// need is an `await Excelize.ready()` before using the API.
+// need is an `await excelizeInit()` before using the API.
 "use strict";
 
 const fs = require("fs");
 const path = require("path");
-const Excelize = require(path.join(__dirname, "..", "dist", "excelize.js"));
+const { excelizeInit } = require(path.join(__dirname, "..", "dist", "excelize.cjs"));
 
 (async function main() {
-  await Excelize.ready();
+  const Excelize = await excelizeInit();
 
   const f = Excelize.newFile();
   f.setCellValue("Sheet1", "A1", "Hello from Node + @halil07/excelize!");

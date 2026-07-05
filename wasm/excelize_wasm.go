@@ -29,6 +29,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"sync"
 	"syscall/js"
 	"time"
@@ -226,7 +229,7 @@ func valueToInterface(v js.Value) (interface{}, error) {
 
 // jsonArrayToInterface decodes a JSON array of mixed primitives for
 // SetSheetRow / SetSheetCol.
-func jsonArrayToInterface(v js.Value) (interface{}, error) {
+func jsonArrayToInterface(v js.Value) ([]interface{}, error) {
 	if v.IsUndefined() || v.IsNull() {
 		return nil, errors.New("missing row/column value array")
 	}
@@ -527,14 +530,14 @@ func registerCellBindings() {
 		if err != nil {
 			return errResult(err)
 		}
-		return errResult(f.SetSheetRow(asStr(args, 1), asStr(args, 2), slice))
+		return errResult(f.SetSheetRow(asStr(args, 1), asStr(args, 2), &slice))
 	})
 	fileOp("setSheetCol", func(f *excelize.File, args []js.Value) js.Value {
 		slice, err := jsonArrayToInterface(asOpts(args, 3))
 		if err != nil {
 			return errResult(err)
 		}
-		return errResult(f.SetSheetCol(asStr(args, 1), asStr(args, 2), slice))
+		return errResult(f.SetSheetCol(asStr(args, 1), asStr(args, 2), &slice))
 	})
 	fileOp("getRows", func(f *excelize.File, args []js.Value) js.Value {
 		var opts excelize.Options
@@ -689,6 +692,9 @@ func registerMergeBindings() {
 		if err != nil {
 			return errResult(err)
 		}
+		if cells == nil {
+			cells = []excelize.MergeCell{}
+		}
 		return ok(cells)
 	})
 }
@@ -709,6 +715,9 @@ func registerTableBindings() {
 		ts, err := f.GetTables(asStr(args, 1))
 		if err != nil {
 			return errResult(err)
+		}
+		if ts == nil {
+			ts = []excelize.Table{}
 		}
 		return ok(ts)
 	})

@@ -3,3 +3,4 @@ dist/
 wasm/out.xlsx
 *.wasm
 *.wasm.map
+.idea

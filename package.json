@@ -22,9 +22,29 @@
     "workbook"
   ],
   "type": "commonjs",
-  "main": "dist/excelize.js",
+  "main": "dist/excelize.cjs",
+  "module": "dist/excelize.mjs",
+  "types": "dist/excelize.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/excelize.d.mts",
+        "default": "./dist/excelize.mjs"
+      },
+      "require": {
+        "types": "./dist/excelize.d.cts",
+        "default": "./dist/excelize.cjs"
+      },
+      "default": "./dist/excelize.js"
+    }
+  },
   "files": [
+    "dist/excelize.cjs",
+    "dist/excelize.mjs",
     "dist/excelize.js",
+    "dist/excelize.d.ts",
+    "dist/excelize.d.mts",
+    "dist/excelize.d.cts",
     "dist/excelize.wasm",
     "dist/wasm_exec.js",
     "README.md",
@@ -33,7 +53,13 @@
   "scripts": {
     "build:go": "node scripts/build.js",
     "build": "npm run build:go",
+    "postbuild":"npm run types",
+    "test": "node --test test/excelize.test.mjs",
+    "types": "tsc --noEmit test/types.test.ts && tsc --noEmit test/types-cjs.test.cts",
     "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.0"
   },
   "engines": {
     "node": ">=14"
